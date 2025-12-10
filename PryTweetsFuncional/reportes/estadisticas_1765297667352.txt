@@ -1,0 +1,11 @@
+=== REPORTE DE ANÁLISIS DE TWEETS ===
+
+Fecha: 2025-12-09T10:27:47.480524
+Total tweets: 5
+
+Distribución por sentimiento:
+  Positivos: 3
+  Negativos: 1
+  Neutros: 1
+
+Entidades analizadas: Apple, Google, Amazon, Microsoft

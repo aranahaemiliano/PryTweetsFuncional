@@ -1,0 +1,13 @@
+=== ESTADÍSTICAS DE TWEETS ===
+Total de tweets: 5
+
+Distribución por sentimiento:
+  Neutro: 1 (20.0%)
+  Negativo: 1 (20.0%)
+  Positivo: 3 (60.0%)
+
+Distribución por entidad:
+  Google: 1
+  Apple: 2
+  Microsoft: 1
+  Amazon: 1

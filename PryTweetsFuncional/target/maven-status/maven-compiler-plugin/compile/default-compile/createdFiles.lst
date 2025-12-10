@@ -1,0 +1,7 @@
+services\TweetLoader.class
+services\TextTransformService.class
+app\Main.class
+com\mycompany\prytweetsfuncional\PryTweetsFuncional.class
+report\ReportGenerator.class
+services\TweetAnalyticsService.class
+model\Tweet.class

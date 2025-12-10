@@ -20,27 +20,20 @@ public class Tweet {
         this.sentimiento = sentimiento;
         this.texto = texto;
     }
-
     
+    // Getters
+    public int getId() { return id; }
+    public String getEntidad() { return entidad; }
+    public String getSentimiento() { return sentimiento; }
+    public String getTexto() { return texto; }
     
-    public int getId() {
-        return id;
-    }
-
-    public String getEntidad() {
-        return entidad;
-    }
-
-    public String getSentimiento() {
-        return sentimiento;
-    }
-
-    public String getTexto() {
-        return texto;
-    }
 
     @Override
     public String toString() {
-        return "Tweet{" + "id=" + id + ", entidad=" + entidad + ", sentimiento=" + sentimiento + ", texto=" + texto + '}';
+        String textoEscapado = texto;
+        if (textoEscapado.contains(",") || textoEscapado.contains("\"")) {
+            textoEscapado = "\"" + textoEscapado.replace("\"", "\"\"") + "\"";
+        }
+        return id + "," + entidad + "," + sentimiento + "," + textoEscapado;
     }
 }

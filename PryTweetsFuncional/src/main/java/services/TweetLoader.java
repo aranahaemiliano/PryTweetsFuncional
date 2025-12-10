@@ -18,119 +18,82 @@ import model.Tweet;
  * @author emiliano arana
  */
 public class TweetLoader {
-    private List<Tweet> tweets;
     
-    public TweetLoader() {
-        this.tweets = new ArrayList<>();
-        cargarDatosEjemplo(); 
-    }
-    
-    private void cargarDatosEjemplo() {
-        tweets.add(new Tweet(1, "Apple", "Positivo", "Excelente producto, muy innovador"));
-        tweets.add(new Tweet(2, "Google", "Neutro", "Nueva actualización disponible"));
-        tweets.add(new Tweet(3, "Amazon", "Negativo", "Problemas con mi pedido"));
-        tweets.add(new Tweet(4, "Apple", "Positivo", "iPhone es increíble"));
-        tweets.add(new Tweet(5, "Microsoft", "Positivo", "Windows 11 funciona muy bien"));
-    }
-    
-    public void agregarTweet(Tweet tweet) {
-        tweets.add(tweet);
-        System.out.println("✓ Tweet agregado exitosamente!");
-    }
-    
-    public List<Tweet> obtenerTodosTweets() {
-        return new ArrayList<>(tweets);
-    }
-    
-    public Tweet buscarPorId(int id) {
-        for (Tweet tweet : tweets) {
-            if (tweet.getId() == id) {
-                return tweet;
+    public Supplier<List<Tweet>> crearLectorTweets(String rutaArchivo) {
+        return () -> {
+            List<Tweet> tweets = new ArrayList<>();
+            int contador = 1; 
+            
+            try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
+                String linea;
+                
+                System.out.println("Leyendo archivo: " + rutaArchivo);
+                
+                while ((linea = br.readLine()) != null && tweets.size() < 1000) {
+                    try {
+                        String[] partes = parsearLineaCSV(linea);
+                        
+                        if (partes.length >= 2) {
+                            int id = contador; 
+                            String entidad = partes.length > 0 ? partes[0].trim() : "Desconocida";
+                            String sentimiento = partes.length > 1 ? partes[1].trim() : "Neutral";
+                            String texto = partes.length > 2 ? partes[2].trim() : "";
+                            
+                            if (texto.startsWith("\"") && texto.endsWith("\"")) {
+                                texto = texto.substring(1, texto.length() - 1);
+                            }
+                            
+                            sentimiento = sentimiento.toLowerCase();
+                            
+                            tweets.add(new Tweet(id, entidad, sentimiento, texto));
+                            contador++;
+                        }
+                        
+                    } catch (Exception e) {
+                        System.err.println("Error parseando línea: " + linea);
+                    }
+                }
+                
+                System.out.println("✓ Total tweets cargados: " + tweets.size());
+              
+                if (tweets.size() < 100) {
+                    System.err.println("⚠ ADVERTENCIA: Solo se cargaron " + tweets.size() + " tweets");
+                    System.err.println("Asegúrate de que el archivo CSV tenga al menos 100 registros");
+                }
+                
+            } catch (IOException e) {
+                System.err.println("❌ Error leyendo archivo: " + e.getMessage());
+                System.err.println("Ruta intentada: " + new java.io.File(rutaArchivo).getAbsolutePath());
             }
-        }
-        return null;
+            
+            return tweets;
+        };
     }
     
-    public List<Tweet> buscarPorEntidad(String entidad) {
-        List<Tweet> resultados = new ArrayList<>();
-        for (Tweet tweet : tweets) {
-            if (tweet.getEntidad().equalsIgnoreCase(entidad)) {
-                resultados.add(tweet);
-            }
-        }
-        return resultados;
-    }
-    
-    public List<Tweet> buscarPorSentimiento(String sentimiento) {
-        List<Tweet> resultados = new ArrayList<>();
-        for (Tweet tweet : tweets) {
-            if (tweet.getSentimiento().equalsIgnoreCase(sentimiento)) {
-                resultados.add(tweet);
-            }
-        }
-        return resultados;
-    }
-    
-    public int contarPorEntidad(String entidad) {
-        int contador = 0;
-        for (Tweet tweet : tweets) {
-            if (tweet.getEntidad().equalsIgnoreCase(entidad)) {
-                contador++;
-            }
-        }
-        return contador;
-    }
-    
-    public int contarPorSentimiento(String sentimiento) {
-        int contador = 0;
-        for (Tweet tweet : tweets) {
-            if (tweet.getSentimiento().equalsIgnoreCase(sentimiento)) {
-                contador++;
-            }
-        }
-        return contador;
-    }
-    
-    public void mostrarResumenAnalisis() {
-        System.out.println("\n=== RESUMEN DE ANÁLISIS DE SENTIMIENTOS ===");
+    private String[] parsearLineaCSV(String linea) {
+        List<String> partes = new ArrayList<>();
+        StringBuilder campoActual = new StringBuilder();
+        boolean entreComillas = false;
         
-        System.out.println("\nTotal por sentimiento:");
-        System.out.println("Positivos: " + contarPorSentimiento("Positivo"));
-        System.out.println("Negativos: " + contarPorSentimiento("Negativo"));
-        System.out.println("Neutros: " + contarPorSentimiento("Neutro"));
-        
-        System.out.println("\nEntidades mencionadas:");
-        List<String> entidadesUnicas = obtenerEntidadesUnicas();
-        for (String entidad : entidadesUnicas) {
-            int conteo = contarPorEntidad(entidad);
-            System.out.println("- " + entidad + ": " + conteo + " menciones");
-        }
-    }
-    
-    private List<String> obtenerEntidadesUnicas() {
-        List<String> entidades = new ArrayList<>();
-        for (Tweet tweet : tweets) {
-            String entidad = tweet.getEntidad();
-            if (!entidades.contains(entidad)) {
-                entidades.add(entidad);
+        for (int i = 0; i < linea.length(); i++) {
+            char c = linea.charAt(i);
+            
+            if (c == '"') {
+                entreComillas = !entreComillas;
+            } else if (c == ',' && !entreComillas) {
+                partes.add(campoActual.toString());
+                campoActual = new StringBuilder();
+            } else {
+                campoActual.append(c);
             }
-        }
-        return entidades;
-    }
-    
-    public void mostrarTodosTweets() {
-        if (tweets.isEmpty()) {
-            System.out.println("No hay tweets disponibles");
-            return;
         }
         
-        System.out.println("\n=== LISTA COMPLETA DE TWEETS ===");
-        for (Tweet tweet : tweets) {
-            System.out.println(tweet);
-        }
+        partes.add(campoActual.toString());
+        
+        return partes.toArray(new String[0]);
     }
     
-    public int getTotalTweets() {
-        return tweets.size();
+    public List<Tweet> cargarTweetsDesdeCSV(String rutaArchivo) {
+        return crearLectorTweets(rutaArchivo).get();
     }
 }

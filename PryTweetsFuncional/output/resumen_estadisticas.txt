@@ -1,0 +1,29 @@
+=== RESUMEN DE ANÁLISIS DE TWEETS ===
+
+Archivo fuente: data/twitters.csv
+Fecha de análisis: 2025-12-09T13:43:44.018134500
+Total de tweets procesados: 1000
+
+--- DISTRIBUCIÓN POR SENTIMIENTO ---
+  borderlands: 1000 tweets (100.0%)
+
+--- PROMEDIO DE LONGITUD POR SENTIMIENTO ---
+  Positivos: 0.00 caracteres
+  Negativos: 0.00 caracteres
+  Neutros: 0.00 caracteres
+
+--- ENTIDADES MÁS MENCIONADAS ---
+  2551: 6 menciones (0.6%)
+  2430: 6 menciones (0.6%)
+  2550: 6 menciones (0.6%)
+  2548: 6 menciones (0.6%)
+  2427: 6 menciones (0.6%)
+  2547: 6 menciones (0.6%)
+  2426: 6 menciones (0.6%)
+  2546: 6 menciones (0.6%)
+  2425: 6 menciones (0.6%)
+  2545: 6 menciones (0.6%)
+
+--- ESTADÍSTICAS ADICIONALES ---
+Tweet más largo (10 caracteres):
+  Irrelevant
